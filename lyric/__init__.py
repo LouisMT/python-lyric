@@ -404,10 +404,7 @@ class Thermostat(lyricDevice):
     @temperatureSetpoint.setter
     def temperatureSetpoint(self, setpoint):
 
-        if self.thermostatSetpointStatus == 'NoHold':
-            thermostatSetpointStatus = 'TemporaryHold'
-        else:
-            thermostatSetpointStatus = self.thermostatSetpointStatus
+        thermostatSetpointStatus = 'TemporaryHold'
 
         if isinstance(setpoint, tuple):
             self.updateThermostat(coolSetpoint=setpoint[0],
@@ -753,12 +750,12 @@ class Lyric(object):
             response.raise_for_status()
             return response.json()
         except requests.HTTPError as e:
-            _LOGGER.error("HTTP Error Lyric API: %s" % e)
+            _LOGGER.error("HTTP Error Lyric API: %s | %s" % (e, e.response.text))
             if e.response.status_code == 401:
                 self._lyricReauth()
         except requests.exceptions.RequestException as e:
             # print("Error Lyric API: %s with data: %s" % (e, data))
-            _LOGGER.error("Error Lyric API: %s" % e)
+            _LOGGER.error("Error Lyric API: %s | %s" % (e, e.response.text))
 
     def _post(self, endpoint, data, **params):
         params['apikey'] = self._client_id
@@ -770,12 +767,12 @@ class Lyric(object):
             response.raise_for_status()
             return response.status_code
         except requests.HTTPError as e:
-            _LOGGER.error("HTTP Error Lyric API: %s" % e)
+            _LOGGER.error("HTTP Error Lyric API: %s | %s" % (e, e.response.text))
             if e.response.status_code == 401:
                 self._lyricReauth()
         except requests.exceptions.RequestException as e:
             # print("Error Lyric API: %s with data: %s" % (e, data))
-            _LOGGER.error("Error Lyric API: %s with data: %s" % (e, data))
+            _LOGGER.error("Error Lyric API: %s with data: %s | %s" % (e, data, e.response.text))
 
     def _checkCache(self, cache_key):
         if cache_key in self._cache:
